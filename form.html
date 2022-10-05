@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Numenera: Salvage Roller</title>
+	<style>
+		label { font-weight: bold; }
+	</style>
+</head>
+<body>
+<div>
+	<form id="form" style="display: grid; grid-template-columns: max-content max-content; grid-gap: 3px 1em;">
+		<label for="salvageLevel">Salvage Level:</label>
+		<input type="number" id="salvageLevel" min="0" max="15" value="1">
+
+		<label for="numSources">Number of Sources:</label>
+		<input type="number" id="numSources" min="1" max="99" value="1">
+
+		<label for="numRolls">Number of Random Iotum Rolls:</label>
+		<input type="number" id="numRolls" min="0" max="5" value="1">
+
+		<label for="specific">Specific Iotum:</label>
+		<select id="specific">
+			<option value="random" selected>Random</option>
+			<option value="io">Io</option>
+			<option value="responsiveSynth">Responsive Synth</option>
+			<option value="aptClay">Apt Clay</option>
+			<option value="bioCircuitry">Bio-Circuitry</option>
+			<option value="synthsteel">Synthsteel</option>
+			<option value="pliableMetal">Pliable Metal</option>
+			<option value="azureSteel">Azure Steel</option>
+			<option value="mimeticGel">Mimetic Gel</option>
+			<option value="quantium">Quantium</option>
+			<option value="amberCrystal">Amber Crystal</option>
+			<option value="protomatter">Protomatter</option>
+			<option value="thaumDust">Thaum Dust</option>
+			<option value="smartTissue">Smart Tissue</option>
+			<option value="psiranium">Psiranium</option>
+			<option value="kaonDot">Kaon Dot</option>
+			<option value="monopole">Monopole</option>
+			<option value="midnightStone">Midnight Stone</option>
+			<option value="oraculum">Oraculum</option>
+			<option value="virtuonParticle">Virtuon Particle</option>
+			<option value="tamedIron">Tamed Iron</option>
+			<option value="philosophine">Philosphine</option>
+			<option value="dataOrb">Data Orb</option>
+			<option value="scalarBosonRod">Scalar Boson Rod</option>
+			<option value="cosmicFoam">Cosmic Foam</option>
+		</select>
+
+		<label for="assets1st">Assets on 1st Roll (discovery):</label>
+		<input type="number" id="assets1st" min="0" max="4" value="0">
+
+		<label for="assets2nd">Assets on 2nd Roll (salvage):</label>
+		<input type="number" id="assets2nd" min="0" max="4" value="0">
+
+		<label for="proficiency">Proficiency:</label>
+		<select id="proficiency">
+			<option value="0" selected>None</option>
+			<option value="1">Trained</option>
+			<option value="2">Specialized</option>
+		</select>
+
+		<label for="int">Intellect Score:</label>
+		<input type="number" id="int" min="0" max="99" value="10">
+
+		<label for="edge">Intellect Edge:</label>
+		<input type="number" id="edge" min="0" max="6" value="1">
+
+		<label for="freeEffort">Free Levels of Effort:</label>
+		<input type="number" id="freeEffort" min="0" max="6" value="0">
+
+		<label for="effort">Maximum Effort:</label>
+		<input type="number" id="effort" min="1" max="6" value="1">
+
+		<label for="large">Large Salvage:</label>
+		<input type="checkbox" id="large">
+
+		<label for="useEffort">Use Effort:</label>
+		<input type="checkbox" id="useEffort" checked>
+
+		<label for="chanceBelow">&rdsh; If salvage chance below (%):</label>
+		<input type="number" id="chanceBelow" min="5" max="100" value="50" step="5">
+
+		<label for="intAbove">&rdsh; While Intellect Pool above:</label>
+		<input type="number" id="intAbove" min="0" max="99" value="0">
+
+		<label for="maxEffort">&rdsh; Always use maximum effort:</label>
+		<input type="checkbox" id="maxEffort">
+
+		<button type="submit" style="grid-column: span 2;" id="submit">Submit</button>
+	</form>
+</div>
+<div id="results">
+	<h3>Results</h3>
+	<ul id="result-items">
+	</ul>
+</div>
+<script src="process.js"></script>
+</body>
+</html>
