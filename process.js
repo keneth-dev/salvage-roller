@@ -43,13 +43,18 @@ let salvage = {};
 let currentInt = 0;
 let intSpent = 0;
 let totalValue = 0;
+let intrusions = 0;
+let minorEffect = false;
+let majorEffect = false;
 
 function processForm(e) {
   e.preventDefault();
 
-  salvage = {}; // reset
+  // reset
+  salvage = {};
   intSpent = 0;
   totalValue = 0;
+  intrusions = 0;
 
   const form = e.target.parentElement;
   let fieldList = [].slice.call(form.elements, 0);
@@ -93,19 +98,28 @@ function processForm(e) {
 
   for (let i = 0; i < fields.numSources; i++) {
     console.log(`Salvaging source number ${i + 1}.`);
-    let diff1 = fields.salvageLevel - fields.proficiency - fields.assets1st;
-    let diff2 = specificLevel - fields.proficiency - fields.assets2nd;
+    let diff1 = Math.max(fields.salvageLevel - fields.proficiency - fields.assets1st, 0);
+    let diff2 = Math.max(specificLevel - fields.proficiency - fields.assets2nd, 0);
 
-    console.log(`Search difficulty reduced by proficiency and assets to ${diff1}.`);
-    console.log(`Salvage difficulty reduced by proficiency and assets to ${diff2}.`)
+    console.log('Search difficulty reduced by proficiency and assets to:', diff1);
+    console.log('Salvage difficulty reduced by proficiency and assets to:', diff2);
 
     let effort = freeEffort ? freeEffort + fields.freeEffort : 0;
 
     console.log(`Using ${effort} free level(s) of effort.`);
 
-    while (salvageSource(diff1, diff2, freeEffort, effort, specific, fields)) {
+    while (salvageSource(diff1, freeEffort, effort, fields)) {
       if (specific) {
-        getIotum(iotum[fields.specific]);
+        let firstMinorEffect = minorEffect;
+        let firstMajorEffect = majorEffect;
+
+        if (salvageSource(diff2, freeEffort, effort, fields)) {
+          getIotum(iotum[fields.specific]);
+        }
+
+        // take both rolls into account;
+        minorEffect |= firstMinorEffect;
+        majorEffect |= firstMajorEffect;
       }
 
       for (let i = 0; i < fields.numRolls; i++) {
@@ -121,10 +135,8 @@ function processForm(e) {
   return false;
 }
 
-function salvageSource(diff1, diff2, freeEffort, effort, specific, fields) {
+function salvageSource(diff, freeEffort, effort, fields) {
   let effortCost = 0;
-  let effort1st = effort;
-  let effort2nd = effort;
 
   if (fields.useEffort) {
     if (fields.maxEffort) {
@@ -132,69 +144,32 @@ function salvageSource(diff1, diff2, freeEffort, effort, specific, fields) {
       effortCost = Math.max(2 * effort + 1 - fields.edge, 0);
       console.log('Using maximum effort:', fields.effort);
     } else {
-      if ((currentInt - effortCost) > fields.intAbove) {
-        while (((diff1 - effort1st) * 15) > fields.chanceBelow && (effort1st - fields.freeEffort) < fields.effort) {
-          effort1st++;
+      if (currentInt > fields.intAbove) {
+        while (((diff - effort) * 15) > fields.chanceBelow && (effort - fields.freeEffort) < fields.effort) {
+          effort++;
         }
 
-        console.log(`Using ${effort1st} level(s) of effort for first roll.`);
-        effortCost += Math.max(2 * effort1st + 1 - fields.edge, 0);
-      }
-
-      if (specific) {
-        if ((currentInt - effortCost) > fields.intAbove) {
-          while (((diff2 - effort2nd) * 15) > fields.chanceBelow && (effort1st - fields.freeEffort) < fields.effort) {
-            effort2nd++;
-          }
-
-          console.log(`Using ${effort2nd} level(s) of effort for second roll.`);
-          effortCost += Math.max(2 * effort2nd + 1 - fields.edge, 0);
-        }
+        console.log('Levels of effort used:', effort);
+        effortCost += Math.max(2 * effort + 1 - fields.edge, 0);
       }
     }
   }
 
   console.log('Effort cost:', effortCost);
 
-  diff1 -= effort1st;
-  diff2 -= effort2nd;
+  diff = Math.max(diff - effort, 0);
 
-  console.log(`Search difficulty reduced by effort to ${diff1}.`);
-  console.log(`Salvage difficulty reduced by effort to ${diff2}.`)
+  console.log('Roll difficulty reduced by effort to:', diff);
 
-  let success = false;
+  // reset
+  minorEffect = false;
+  majorEffect = false;
 
-  if (diff1 > 0) {
-    let roll = Math.ceil(Math.random() * 20);
+  let success = salvageRoll(diff);
 
-    console.log(`Rolled a ${roll} against the required ${diff1 * 3}.`)
-
-    if (roll >= (diff1 * 3)) {
-      success = true;
-
-      if (roll === 20) {
-        effortCost = 0;
-        console.log('Effort cost reduced to 0.');
-      }
-
-      if (specific)  {
-        roll = Math.ceil(Math.random() * 20);
-
-        console.log(`Rolled a ${roll} against the required ${diff2 * 3}.`)
-
-        if (roll <= diff2) {
-          success = false;
-        }
-
-        if (roll === 20) {
-          effortCost = 0;
-          console.log('Effort cost reduced to 0.');
-        }
-      }
-    }
-    // TODO: What to do with nat 1 and nat 19, 20.
-  } else {
-    success = true;
+  if (majorEffect) {
+    effortCost = 0;
+    console.log('Effort cost reduced to 0.');
   }
 
   currentInt -= effortCost;
@@ -202,6 +177,32 @@ function salvageSource(diff1, diff2, freeEffort, effort, specific, fields) {
 
   console.log('Salvage roll success:', success);
   return success;
+}
+
+function salvageRoll(diff) {
+  if (diff > 0) {
+    let roll = Math.ceil(Math.random() * 20);
+
+    console.log(`Rolled a ${roll} against the required ${diff * 3}.`)
+
+    if (roll === 1) {
+      intrusions++;
+    }
+
+    if (roll < (diff * 3)) {
+      return false;
+    }
+
+    if (roll === 19) {
+      minorEffect = true;
+    }
+
+    if (roll === 20) {
+      majorEffect = true;
+    }
+  }
+
+  return true;
 }
 
 function getRandomIotum(salvageLevel, largeSource) {
@@ -271,6 +272,13 @@ function getRandomIotum(salvageLevel, largeSource) {
 
 function getIotum(i) {
   let num = i.num ? i.num : Math.ceil(Math.random() * i.roll);
+
+  if (majorEffect) {
+    num += i.num ? i.num : Math.ceil(Math.random() * i.roll);
+  } else if (minorEffect) {
+    num += 1;
+  }
+
   let parts = num * i.level;
   let value = num * i.value;
 
@@ -305,4 +313,8 @@ function displayResults() {
   const remaining = document.createElement('li');
   remaining.innerHTML = `<b>Remaining Int:</b> ${currentInt}`;
   summary.appendChild(remaining);
+
+  const fails = document.createElement('li');
+  fails.innerHTML = `<b>Intrusions:</b> ${intrusions}`;
+  summary.appendChild(fails);
 }
