@@ -1,5 +1,7 @@
 body {
 	background-image: url("background.jpg");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
 	color: white;
 	display: flex;
 	flex-flow: column;
