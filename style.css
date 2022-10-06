@@ -1,0 +1,12 @@
+label { font-weight: bold; }
+#form {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+	grid-gap: 3px 1em;
+	max-width: 600px;
+}
+#submit { grid-column: span 2; }
+
+@media screen and (max-width: 550px) {
+	#submit { grid-column: inherit !important; }
+}
