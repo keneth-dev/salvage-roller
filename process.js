@@ -341,6 +341,7 @@ function filterOptions(level) {
       el.hidden = iotum[el.value].level > level;
     } else {
       el.selected = true; // reset to random on change
+      specificIotum.dispatchEvent(new Event('change'));
     }
   });
 }
