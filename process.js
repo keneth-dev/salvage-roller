@@ -293,6 +293,8 @@ const submitButton = document.getElementById('submit');
 submitButton.onclick = processForm;
 
 function displayResults(fields) {
+  const results = document.getElementById('results');
+  results.classList.remove('hidden');
   const summary = document.getElementById('result-items');
   summary.replaceChildren();
 
