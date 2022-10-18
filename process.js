@@ -57,7 +57,7 @@ function processForm(e) {
   intrusions = 0;
 
   const form = e.target.parentElement;
-  let fieldList = [].slice.call(form.elements, 0);
+  let fieldList = Array.from(form.elements);
   fieldList = fieldList.filter((f) => {
     return f.id && f.type !== 'submit';
   });
@@ -324,8 +324,7 @@ salvageLevel.addEventListener('change', (ev) => filterOptions(ev.target.value));
 
 function filterOptions(level) {
   const options = document.getElementById('specific').getElementsByTagName('option');
-  const optionsList = [].slice.call(options, 0);
-  optionsList.forEach((el) => {
+  Array.from(options).forEach((el) => {
     if (el.value !== 'random') {
       el.hidden = iotum[el.value].level > level;
     } else {
