@@ -2,6 +2,7 @@ body {
 	background-image: url("background.jpg");
 	background-repeat: no-repeat;
 	background-attachment: fixed;
+	background-size: cover;
 	color: white;
 	display: flex;
 	flex-flow: column;
@@ -22,6 +23,10 @@ label, input, select, button, #form > div {
 #submit {
 	grid-column: span 2;
 	margin-top: 1em;
+}
+#copyright {
+	font-weight: bold;
+	text-align: center;
 }
 .content {
 	max-width: 600px;
