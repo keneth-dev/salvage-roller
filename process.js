@@ -130,7 +130,7 @@ function processForm(e) {
     }
   }
 
-  displayResults();
+  displayResults(fields);
 
   return false;
 }
@@ -292,7 +292,7 @@ function getIotum(i) {
 const submitButton = document.getElementById('submit');
 submitButton.onclick = processForm;
 
-function displayResults() {
+function displayResults(fields) {
   const summary = document.getElementById('result-items');
   summary.replaceChildren();
 
@@ -310,15 +310,27 @@ function displayResults() {
   intCost.innerHTML = `<b>Int Spent:</b> ${intSpent}`;
   summary.appendChild(intCost);
 
-  const remaining = document.createElement('li');
-  remaining.innerHTML = `<b>Remaining Int:</b> ${currentInt}`;
-  summary.appendChild(remaining);
+  if (!fields.maxEffort) {
+    const remaining = document.createElement('li');
+    remaining.innerHTML = `<b>Remaining Int:</b> ${currentInt}`;
+    summary.appendChild(remaining);
+  }
 
   const fails = document.createElement('li');
   fails.innerHTML = `<b>Intrusions:</b> ${intrusions}`;
   summary.appendChild(fails);
 }
 
+// Disable assets to second roll if there is no second roll.
+const specificIotum = document.getElementById('specific');
+const assets2nd = document.getElementById('assets2nd');
+specificIotum.addEventListener('change', (ev) => {
+  assets2nd.disabled = ev.target.value === 'random';
+});
+
+specificIotum.dispatchEvent(new Event('change'));
+
+// Filter the specific iotum selector based on salvage level.
 const salvageLevel = document.getElementById('salvageLevel');
 salvageLevel.addEventListener('change', (ev) => filterOptions(ev.target.value));
 
