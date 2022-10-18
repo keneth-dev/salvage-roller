@@ -318,3 +318,20 @@ function displayResults() {
   fails.innerHTML = `<b>Intrusions:</b> ${intrusions}`;
   summary.appendChild(fails);
 }
+
+const salvageLevel = document.getElementById('salvageLevel');
+salvageLevel.addEventListener('change', (ev) => filterOptions(ev.target.value));
+
+function filterOptions(level) {
+  const options = document.getElementById('specific').getElementsByTagName('option');
+  const optionsList = [].slice.call(options, 0);
+  optionsList.forEach((el) => {
+    if (el.value !== 'random') {
+      el.hidden = iotum[el.value].level > level;
+    } else {
+      el.selected = true; // reset to random on change
+    }
+  });
+}
+
+filterOptions(salvageLevel.value);
